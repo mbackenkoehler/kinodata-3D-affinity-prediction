@@ -86,7 +86,11 @@ class RegressionModel(pl.LightningModule):
 
     def training_step(self, batch, *args) -> Tensor:
         pred = self.forward(batch).view(-1, 1)
-        loss = self.criterion(pred, batch.y.view(-1, 1))
+        if self.config.loss_type == "rmsd_weighted_mse":
+            rmsd = batch.predicted_rmsd.view(-1, 1)
+            loss = self.criterion(pred, batch.y.view(-1, 1), rmsd)
+        else:
+            loss = self.criterion(pred, batch.y.view(-1, 1))
         self.log("train/loss", loss, batch_size=pred.size(0), on_epoch=True)
         return loss
 

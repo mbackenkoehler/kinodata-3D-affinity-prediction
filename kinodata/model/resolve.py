@@ -2,6 +2,8 @@ import torch.nn as nn
 import torch.optim as opt
 from torch_geometric.nn import aggr
 
+from kinodata.model.loss import RMSDWeightedLoss
+
 
 _act = {
     "sigmoid": nn.Sigmoid(),
@@ -39,6 +41,8 @@ def resolve_loss(loss_type: str) -> nn.Module:
     loss_type = loss_type.lower().lstrip()
     if loss_type == "mse":
         return nn.MSELoss()
+    if loss_type == "rmsd_weighted_mse":
+        return RMSDWeightedLoss()
     if loss_type in ("mae", "l1"):
         return nn.L1Loss()
     if loss_type == "smooth_l1":
